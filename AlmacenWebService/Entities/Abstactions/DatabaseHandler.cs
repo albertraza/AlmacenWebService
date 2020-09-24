@@ -17,5 +17,8 @@ namespace AlmacenWebService.Entities.Abstactions
         public abstract Task<T> GetAsync(int id);
 
         public abstract Task UpdateAsync(T obj);
+
+        public abstract Task<int> Count();
+
     }
 }

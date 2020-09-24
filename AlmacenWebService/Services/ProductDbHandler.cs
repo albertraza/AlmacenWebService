@@ -17,6 +17,11 @@ namespace AlmacenWebService.Services
             this.configuration = configuration;
         }
 
+        public override Task<int> Count()
+        {
+            throw new NotImplementedException();
+        }
+
         public override async Task<Product> CreateAsync(Product obj)
         {
             using var connection = new SqlConnection(configuration.GetConnectionString("defaultConnectionString"));
@@ -29,7 +34,7 @@ namespace AlmacenWebService.Services
             command.Connection = connection;
 
             command.Parameters.Add(new SqlParameter("@name", System.Data.SqlDbType.VarChar)).Value = obj.Name;
-            command.Parameters.Add(new SqlParameter("@categoryId", System.Data.SqlDbType.Int)).Value = obj.CategoryId;
+            command.Parameters.Add(new SqlParameter("@category", System.Data.SqlDbType.Int)).Value = obj.CategoryId;
             command.Parameters.Add(new SqlParameter("@price", System.Data.SqlDbType.Float)).Value = obj.Price;
 
             var productId = (int)await command.ExecuteScalarAsync();
@@ -77,6 +82,7 @@ namespace AlmacenWebService.Services
             {
                 productList.Add(
                     new Product(
+                                Convert.ToInt32(reader["id"].ToString()),
                                 reader["name"].ToString(),
                                 Convert.ToInt32(reader["categoryId"].ToString()),
                                 Convert.ToDouble(reader["price"].ToString())

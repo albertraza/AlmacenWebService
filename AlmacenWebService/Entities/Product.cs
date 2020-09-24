@@ -44,5 +44,13 @@ namespace AlmacenWebService.Entities
             CategoryId = categoryId;
             Price = price;
         }
+
+        public Product(int id, string name, int categoryId, double price)
+        {
+            Id = id;
+            Name = name;
+            CategoryId = categoryId;
+            Price = price;
+        }
     }
 }

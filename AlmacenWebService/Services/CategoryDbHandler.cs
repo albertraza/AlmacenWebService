@@ -16,6 +16,11 @@ namespace AlmacenWebService.Entities
             this.configuration = configuration;
         }
 
+        public override Task<int> Count()
+        {
+            throw new NotImplementedException();
+        }
+
         public override async Task<Category> CreateAsync(Category obj)
         {
             using var connection = new SqlConnection(configuration.GetConnectionString("defaultConnectionString"));
