@@ -20,6 +20,9 @@ namespace AlmacenWebService.Entities
         [Required]
         [Range(0.00, 99999999999999999)]
         public double Price { get; set; }
+        [Required]
+        [GreaterThanZeroAtribute]
+        public int Quantity { get; set; }
 
 
         public Product()
@@ -51,6 +54,15 @@ namespace AlmacenWebService.Entities
             Name = name;
             CategoryId = categoryId;
             Price = price;
+        }
+
+        public Product(int id, string name, int categoryId, double price, int quantity)
+        {
+            Id = id;
+            Name = name;
+            CategoryId = categoryId;
+            Price = price;
+            Quantity = quantity;
         }
     }
 }

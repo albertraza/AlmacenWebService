@@ -36,6 +36,7 @@ namespace AlmacenWebService.Services
             command.Parameters.Add(new SqlParameter("@name", System.Data.SqlDbType.VarChar)).Value = obj.Name;
             command.Parameters.Add(new SqlParameter("@category", System.Data.SqlDbType.Int)).Value = obj.CategoryId;
             command.Parameters.Add(new SqlParameter("@price", System.Data.SqlDbType.Float)).Value = obj.Price;
+            command.Parameters.Add(new SqlParameter("@quantity", System.Data.SqlDbType.Int)).Value = obj.Quantity;
 
             var productId = (int)await command.ExecuteScalarAsync();
             obj.Id = productId;
@@ -75,7 +76,7 @@ namespace AlmacenWebService.Services
             command.Connection = connection;
 
 
-            var reader = await command.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
             var productList = new List<Product>();
 
             while (await reader.ReadAsync())
@@ -85,7 +86,8 @@ namespace AlmacenWebService.Services
                                 Convert.ToInt32(reader["id"].ToString()),
                                 reader["name"].ToString(),
                                 Convert.ToInt32(reader["categoryId"].ToString()),
-                                Convert.ToDouble(reader["price"].ToString())
+                                Convert.ToDouble(reader["price"].ToString()),
+                                Convert.ToInt32(reader["quantity"].ToString())
                                 )
                     );
             }
@@ -108,7 +110,7 @@ namespace AlmacenWebService.Services
 
             command.Parameters.Add(new SqlParameter("@id", System.Data.SqlDbType.Int)).Value = id;
 
-            var reader = await command.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
             var product = new Product();
 
             while(await reader.ReadAsync())
@@ -117,6 +119,7 @@ namespace AlmacenWebService.Services
                 product.Name = reader["name"].ToString();
                 product.CategoryId = Convert.ToInt32(reader["categoryId"].ToString());
                 product.Price = Convert.ToDouble(reader["price"].ToString());
+                product.Quantity = Convert.ToInt32(reader["quantity"].ToString());
             }
 
             return product;
