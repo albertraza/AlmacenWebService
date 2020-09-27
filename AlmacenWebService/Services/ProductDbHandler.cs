@@ -81,15 +81,7 @@ namespace AlmacenWebService.Services
 
             while (await reader.ReadAsync())
             {
-                productList.Add(
-                    new Product(
-                                Convert.ToInt32(reader["id"].ToString()),
-                                reader["name"].ToString(),
-                                Convert.ToInt32(reader["categoryId"].ToString()),
-                                Convert.ToDouble(reader["price"].ToString()),
-                                Convert.ToInt32(reader["quantity"].ToString())
-                                )
-                    );
+                productList.Add(MapToEntity(reader));
             }
 
             await connection.CloseAsync();
@@ -113,13 +105,9 @@ namespace AlmacenWebService.Services
             using var reader = await command.ExecuteReaderAsync();
             var product = new Product();
 
-            while(await reader.ReadAsync())
+            while (await reader.ReadAsync())
             {
-                product.Id = Convert.ToInt32(reader["id"].ToString());
-                product.Name = reader["name"].ToString();
-                product.CategoryId = Convert.ToInt32(reader["categoryId"].ToString());
-                product.Price = Convert.ToDouble(reader["price"].ToString());
-                product.Quantity = Convert.ToInt32(reader["quantity"].ToString());
+                product = MapToEntity(reader);
             }
 
             return product;
@@ -144,6 +132,18 @@ namespace AlmacenWebService.Services
             await command.ExecuteNonQueryAsync();
 
             await connection.CloseAsync();
+        }
+
+        private Product MapToEntity(SqlDataReader reader)
+        {
+            return new Product(
+                                Convert.ToInt32(reader["id"].ToString()),
+                                reader["name"].ToString(),
+                                Convert.ToInt32(reader["categoryId"].ToString()),
+                                Convert.ToDouble(reader["price"].ToString()),
+                                Convert.ToInt32(reader["quantity"].ToString())
+                                );
+
         }
     }
 }

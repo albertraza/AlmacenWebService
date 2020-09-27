@@ -69,7 +69,7 @@ namespace AlmacenWebService.Entities
             command.CommandType = System.Data.CommandType.StoredProcedure;
             command.CommandText = "getCategories";
 
-            var reader = await command.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
             var categoryList = new List<Category>();
 
             while (reader.Read())
@@ -95,7 +95,7 @@ namespace AlmacenWebService.Entities
 
             command.Parameters.Add(new SqlParameter("@id", System.Data.SqlDbType.Int)).Value = id;
 
-            var reader = await command.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
             var category = new Category();
 
             while (reader.Read())
