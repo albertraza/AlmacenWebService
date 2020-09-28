@@ -40,6 +40,8 @@ C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWeb
 C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWebService\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.pdb
 C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWebService\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Runtime.Caching.dll
 C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWebService\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWebService\obj\Debug\netcoreapp3.1\AlmacenWebService.csproj.CopyComplete
+C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWebService\bin\Debug\netcoreapp3.1\AutoMapper.dll
+C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWebService\bin\Debug\netcoreapp3.1\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWebService\obj\Debug\netcoreapp3.1\AlmacenWebService.csproj.CoreCompileInputs.cache
 C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWebService\obj\Debug\netcoreapp3.1\AlmacenWebService.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\arber\Documents\HardWork\Personal Projects\AlmacenWebService\AlmacenWebService\obj\Debug\netcoreapp3.1\AlmacenWebService.csproj.CopyComplete

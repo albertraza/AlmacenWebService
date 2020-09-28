@@ -10,9 +10,6 @@ namespace AlmacenWebService.Utilities
     {
         protected override ValidationResult IsValid(object value, ValidationContext context)
         {
-            if (value.GetType() == typeof(int))
-                return new ValidationResult("Se requiere que el valor sea un numero");
-
             var intValue = (int)value;
 
             if (intValue <= 0)

@@ -1,5 +1,7 @@
 ﻿using AlmacenWebService.Entities;
 using AlmacenWebService.Entities.Abstactions;
+using AlmacenWebService.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,27 +13,33 @@ namespace AlmacenWebService.Controllers
     public class ProductsController: ControllerBase
     {
         private readonly ICrud<Product> productsDbHandler;
+        private readonly IMapper mapper;
 
-        public ProductsController(ICrud<Product> productDbHandler)
+        public ProductsController(ICrud<Product> productDbHandler, IMapper mapper)
         {
-            this.productsDbHandler = productDbHandler;
+            productsDbHandler = productDbHandler;
+            this.mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<IProduct>>> Get()
+        [HttpGet(Name ="getProducts")]
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> Get()
         {
-            return Ok(await productsDbHandler.GetAllAsync());
+            var products = await productsDbHandler.GetAllAsync();
+            var productsDTO = mapper.Map<List<ProductDTO>>(products);
+            return productsDTO;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct([FromBody] Product product)
+        [HttpPost(Name ="createProduct")]
+        public async Task<ActionResult> CreateProduct([FromBody] ProductCreateDTO productCreate)
         {
+            var product = mapper.Map<Product>(productCreate);
             await productsDbHandler.CreateAsync(product);
-            return CreatedAtRoute("getProduct", new { id = product.Id }, product);
+            var productDTO = mapper.Map<ProductDTO>(product);
+            return CreatedAtRoute("getProduct", new { id = product.Id }, productDTO);
         }
 
         [HttpGet("{id}", Name ="getProduct")]
-        public async Task<ActionResult<IProduct>> GetProduct(int? id)
+        public async Task<ActionResult> GetProduct(int? id)
         {
             if (id == null)
                 return BadRequest();
@@ -41,30 +49,25 @@ namespace AlmacenWebService.Controllers
             if (product == null)
                 return NotFound();
 
-            return Ok(product);
+            var productDTO = mapper.Map<ProductDTO>(product);
+
+            return Ok(productDTO);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int? id, [FromBody] Product product)
+        [HttpPut("{id}", Name ="updateProduct")]
+        public async Task<ActionResult> Update(int id, [FromBody] ProductCreateDTO productCreate)
         {
-            if (id == null)
-                return BadRequest();
-
-            if (id != product.Id)
-                return BadRequest();
-
+            var product = mapper.Map<Product>(productCreate);
+            product.Id = id;
             await productsDbHandler.UpdateAsync(product);
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int? id)
+        public async Task<ActionResult> Delete(int id)
         {
-            if (id == null)
-                return BadRequest();
-
-            await productsDbHandler.DeleteAsync((int)id);
+            await productsDbHandler.DeleteAsync(id);
 
             return NoContent();
         }
