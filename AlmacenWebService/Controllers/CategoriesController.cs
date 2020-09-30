@@ -1,6 +1,8 @@
 ﻿
 using AlmacenWebService.Entities;
 using AlmacenWebService.Entities.Abstactions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +12,7 @@ namespace AlmacenWebService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoriesController: ControllerBase
     {
         private readonly ICrud<Category> categoryHandler;
@@ -19,7 +22,7 @@ namespace AlmacenWebService.Controllers
             this.categoryHandler = categoryHandler;
         }
 
-        [HttpGet]
+        [HttpGet()]
         public async Task<ActionResult<IEnumerable<Category>>> Get()
         {
             return Ok(await categoryHandler.GetAllAsync());
