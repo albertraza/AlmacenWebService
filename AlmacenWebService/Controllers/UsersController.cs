@@ -46,11 +46,21 @@ namespace AlmacenWebService.Controllers
             return BuildToken(model);
         }
 
-        //[HttpPost("login")]
-        //public async Task<ActionResult<UserToken>> login([FromBody] UserInfo userInfo)
-        //{
-        //    var result = await signInManager.PasswordSignInAsync(userInfo.Email, userInfo.Password);
-        //}
+        [HttpPost("login")]
+        public async Task<ActionResult<UserToken>> login([FromBody] UserInfo userInfo)
+        {
+            var result = await signInManager.PasswordSignInAsync(userInfo.Email, userInfo.Password, false, false);
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+                return BadRequest(ModelState);
+            }
+
+            var user = await userManager.FindByEmailAsync(userInfo.Email);
+            var roles = await userManager.GetRolesAsync(user);
+            return BuildToken(userInfo);
+        }
 
 
         private UserToken BuildToken(UserInfo user)
