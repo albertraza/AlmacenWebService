@@ -13,7 +13,7 @@ namespace AlmacenWebService.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class CategoriesController: ControllerBase
+    public class CategoriesController : ControllerBase
     {
         private readonly ICrud<Category> categoryHandler;
 
@@ -29,13 +29,14 @@ namespace AlmacenWebService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]Category category)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Create([FromBody] Category category)
         {
             await categoryHandler.CreateAsync(category);
             return CreatedAtRoute("getCategory", new { id = category.Id }, category);
         }
 
-        [HttpGet("{id}", Name ="getCategory")]
+        [HttpGet("{id}", Name = "getCategory")]
         public async Task<ActionResult<Category>> Get(int? id)
         {
             if (id == null)
@@ -50,6 +51,7 @@ namespace AlmacenWebService.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -61,7 +63,8 @@ namespace AlmacenWebService.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int? id ,[FromBody] Category category)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Update(int? id, [FromBody] Category category)
         {
             if (id == null)
                 return BadRequest();

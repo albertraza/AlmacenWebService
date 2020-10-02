@@ -6,6 +6,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AlmacenWebService.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +37,7 @@ namespace AlmacenWebService.Controllers
 
 
         [HttpPost("create")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
         public async Task<ActionResult<UserToken>> create([FromBody] UserInfo model)
         {
             var user = new User() { UserName = model.Email, Email = model.Email };
@@ -43,7 +46,7 @@ namespace AlmacenWebService.Controllers
             if (!result.Succeeded)
                 return BadRequest("Email or password are invalid");
 
-            return BuildToken(model);
+            return BuildToken(model, new List<string>());
         }
 
         [HttpPost("login")]
@@ -59,25 +62,60 @@ namespace AlmacenWebService.Controllers
 
             var user = await userManager.FindByEmailAsync(userInfo.Email);
             var roles = await userManager.GetRolesAsync(user);
-            return BuildToken(userInfo);
+            return BuildToken(userInfo, new List<string>(roles));
         }
 
 
-        private UserToken BuildToken(UserInfo user)
+        [HttpPost("assign-role")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+        public async Task<ActionResult> addUserToARole([FromBody] UserRole userRole)
         {
-            var claims = new[]
+            if (userRole == null)
+                return BadRequest("Must provide a userId and Role to assign the user to");
+
+            if (userRole.UserId == null)
+                return BadRequest("Must provide an userId");
+
+            if (userRole.Role == null)
+                return BadRequest("Must provide a Role");
+
+            var user = await userManager.FindByIdAsync(userRole.UserId);
+
+            if (user == null)
+                return NotFound();
+
+            await userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, userRole.Role));
+            await userManager.AddToRoleAsync(user, userRole.Role);
+
+            return NoContent();
+        }
+
+
+        private UserToken BuildToken(UserInfo user, List<string> roles)
+        {
+            var claims = new List<Claim>()
             {
                 new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.UniqueName, user.Email),
                 new Claim("miValor", "lo que yo quiera"),
                 new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
+            roles.ForEach(role => {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            });
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var expiration = DateTime.UtcNow.AddHours(1);
 
-            var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims, expires: expiration, signingCredentials: creds);
+            var token = new JwtSecurityToken(
+                    issuer: null,
+                    audience: null,
+                    claims: claims,
+                    expires: expiration,
+                    signingCredentials: creds
+                );
 
             return new UserToken() { Expiration = expiration, Token = new JwtSecurityTokenHandler().WriteToken(token) };
         }
