@@ -2,6 +2,8 @@
 using AlmacenWebService.Entities.Abstactions;
 using AlmacenWebService.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,7 +12,8 @@ namespace AlmacenWebService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController: ControllerBase
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public class ProductsController : ControllerBase
     {
         private readonly ICrud<Product> productsDbHandler;
         private readonly IMapper mapper;
@@ -21,7 +24,7 @@ namespace AlmacenWebService.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet(Name ="getProducts")]
+        [HttpGet(Name = "getProducts")]
         public async Task<ActionResult<IEnumerable<ProductDTO>>> Get()
         {
             var products = await productsDbHandler.GetAllAsync();
@@ -29,7 +32,8 @@ namespace AlmacenWebService.Controllers
             return productsDTO;
         }
 
-        [HttpPost(Name ="createProduct")]
+        [HttpPost(Name = "createProduct")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> CreateProduct([FromBody] ProductCreateDTO productCreate)
         {
             var product = mapper.Map<Product>(productCreate);
@@ -38,7 +42,7 @@ namespace AlmacenWebService.Controllers
             return CreatedAtRoute("getProduct", new { id = product.Id }, productDTO);
         }
 
-        [HttpGet("{id}", Name ="getProduct")]
+        [HttpGet("{id}", Name = "getProduct")]
         public async Task<ActionResult> GetProduct(int? id)
         {
             if (id == null)
@@ -54,7 +58,8 @@ namespace AlmacenWebService.Controllers
             return Ok(productDTO);
         }
 
-        [HttpPut("{id}", Name ="updateProduct")]
+        [HttpPut("{id}", Name = "updateProduct")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Update(int id, [FromBody] ProductCreateDTO productCreate)
         {
             var product = mapper.Map<Product>(productCreate);
@@ -65,6 +70,7 @@ namespace AlmacenWebService.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Delete(int id)
         {
             await productsDbHandler.DeleteAsync(id);
